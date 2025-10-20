@@ -1,29 +1,21 @@
-from fastapi import FastAPI
-from pydantic import Basemodel
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel, Field
 from dotenv import load_dotenv
 import uvicorn
 import os
-
 
 load_dotenv()
 
 app = FastAPI(title="Simple FastAPI App", version="1.0.0")
 
-@app.get("/")
-def root():
-    return {"Message": "Welcome to my FASTAPI Application"}
-
-if __name__ == "__main__":
-    print(os.getenv("host"))
-    print(os.getenv("port"))
-    uvicorn.run(app, host=os.getenv("host"), port=int(os.getenv("port")))
+data = []
 
 class Item(BaseModel):
     name: str = Field(..., example="Pepetual")
     age: int = Field(..., example=25)
     track: str = Field(..., example="Fullstack Developer")
 
-@app.get("/", description="This endpont just returns a welcome message") 
+@app.get("/", description="This endpont just returns a welcome message")
 def root():
     return {"Message": "Welcome to my FastAPI Application"}
 
@@ -39,6 +31,13 @@ def create_data(req: Item):
 
 @app.put("/update-data/{id}")
 def update_data(id: int, req: Item):
-    data[id = req.dict()]
+    if id < 0 or id >= len(data):
+        raise HTTPException(status_code=404, detail="Item not found")
+    data[id] = req.dict()
     print(data)
     return {"Message": "Data Received", "Data": data}
+
+if _name_ == "_main_":
+    print(os.getenv("host"))
+    print(os.getenv("port"))
+    uvicorn.run(app, host=os.getenv("host"), port=int(os.getenv("port")))
