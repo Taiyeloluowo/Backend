@@ -19,10 +19,15 @@ depends_on: Union[str, Sequence[str], None] = ${repr(depends_on)}
 
 
 def upgrade() -> None:
-    """Upgrade schema."""
-    ${upgrades if upgrades else "pass"}
+    op.execute("""
+    ALTER TABLE users
+    ADD COLUMN userType varchar(100) DEFAULT 'student'
+""")
+    pass
 
 
 def downgrade() -> None:
-    """Downgrade schema."""
-    ${downgrades if downgrades else "pass"}
+    op.execute("""ALTER TABLE users
+    ADD COLUMN userType varchar(100) DEFAULT 'student'
+""")
+    pass
